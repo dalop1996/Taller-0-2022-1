@@ -1,0 +1,160 @@
+package Taller;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
+
+public class app {
+
+	public static void main(String[] args) {
+		
+		String [] userNames = new String [100];
+		String [] passWords = new String [100];
+		int [] vida = new int [100];
+		int [] attack = new int [100];
+		int [] defence = new int [100];
+		int [] speed = new int [100];
+		int [] cantSpells = new int [100];
+		int [] experience = new int [100];
+		
+		leerJugadores(userNames,passWords,vida,attack,defence,speed,cantSpells,experience);
+		
+		String [] playerName = new String[100];
+		String [] nameSpell = new String[100];
+		int [] power = new int[100];
+		
+		leerHechizos(playerName,nameSpell,power);
+		
+		String [] enemyName = new String[100];
+		int [] enemyVida = new int[100];
+		int [] enemyAtaque = new int[100];
+		String [] enemyClase = new String[100];
+		int [] enemyVelocidad = new int[100];
+		
+		leerEnemigos(enemyName,enemyVida,enemyAtaque,enemyClase,enemyVelocidad);
+		
+		String [] clasificacion = {"S","A","B","C","F"};
+		double [] probabilidad = {0.01,0.1,0.25,0.5,0.75};
+		
+		
+	}
+
+	
+	
+	private static int leerEnemigos(String[] enemyName, int[] enemyVida, int[] enemyAtaque, String[] enemyClase,
+			int[] enemyVelocidad) {
+		int cont = 0;
+		
+		try {
+			Scanner txt = new Scanner(new File("Enemigos.txt"));
+			
+			while(txt.hasNextLine()) {
+				
+				String line = txt.nextLine();
+				String [] part = line.split(",");
+				
+				String enemigo = part[0];
+				int vida = Integer.parseInt(part[1]);
+				int ataque = Integer.parseInt(part[2]);
+				String clase = part[3];
+				int velocidad = Integer.parseInt(part[4]);
+				
+				enemyName[cont] = enemigo;
+				enemyVida[cont] = vida;
+				enemyAtaque[cont] = ataque;
+				enemyClase[cont] = clase;
+				enemyVelocidad[cont] = velocidad;
+				
+				//System.out.println(enemyName[cont] + enemyVida[cont] + enemyAtaque[cont] +enemyClase[cont] + enemyVelocidad[cont]);
+				cont++;
+				
+				
+			}
+			
+			txt.close();
+		} catch (FileNotFoundException e) {
+			
+			e.printStackTrace();
+		}
+		
+		return cont;
+		
+	}
+
+
+
+	private static int leerHechizos(String[] playerName, String[] nameSpell, int[] power) {
+		int cont = 0;
+		
+		try {
+			Scanner txt = new Scanner(new File("Hechizos.txt"));
+
+			while(txt.hasNextLine()) {
+				
+				String line = txt.nextLine();
+				String [] part = line.split(",");
+				String nombre = part[0];
+				String spell = part[1];
+				int poder = Integer.parseInt(part[2]);
+				
+				playerName[cont] = nombre;
+				nameSpell[cont] = spell;
+				power[cont] = poder;
+				
+				//System.out.println(playerName[cont] + nameSpell[cont] + power[cont] );
+				
+				cont++;
+			}
+			txt.close();
+		}
+		
+		catch (FileNotFoundException e) {
+			
+			e.printStackTrace();
+		}
+		return cont;
+	}
+
+
+
+	public static int leerJugadores(String [] userNames,String [] passWords,int [] vida,int [] attack,
+			int [] defence,int [] speed,int [] cantSpells,int [] experience) {
+		int cont = 0;
+		try {
+			Scanner txt =  new Scanner(new File("Jugadores.txt"));
+			
+			while(txt.hasNextLine()) {
+				String line =  txt.nextLine();
+				String  [] part = line.split(",");
+				String usuario = part[0];
+				String contraseña= part[1];
+				int hp = Integer.parseInt(part[2]);
+				int ataque = Integer.parseInt(part[3]);
+				int defensa = Integer.parseInt(part[4]);
+				int velocidad = Integer.parseInt(part[5]);
+				int hechizos = Integer.parseInt(part[6]);
+				int exp = Integer.parseInt(part[7]);
+				
+				userNames[cont] = usuario;
+				passWords[cont] = contraseña;
+				vida[cont] = hp;
+				attack[cont] = ataque;
+				defence[cont] = defensa;
+				speed[cont] = velocidad;
+				cantSpells[cont] = hechizos;
+				experience[cont] = exp;
+				
+				//System.out.println(userNames[cont] + passWords[cont] + vida[cont] + attack[cont] + defence[cont] + speed[cont] + cantSpells[cont] + experience[cont]);
+		
+				cont++;
+			}
+			txt.close();
+			
+		} catch (FileNotFoundException e) {
+			
+			e.printStackTrace();
+		}
+		
+		return cont;
+	}
+}
