@@ -2,6 +2,7 @@ package Taller;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.Random;
 import java.util.Scanner;
 
 public class app {
@@ -21,9 +22,9 @@ public class app {
 		
 		String [] playerName = new String[100];
 		String [] nameSpell = new String[100];
-		int [] power = new int[100];
 		
-		leerHechizos(playerName,nameSpell,power);
+		
+		leerHechizos(playerName,nameSpell);
 		
 		String [] enemyName = new String[100];
 		int [] enemyVida = new int[100];
@@ -33,14 +34,949 @@ public class app {
 		
 		leerEnemigos(enemyName,enemyVida,enemyAtaque,enemyClase,enemyVelocidad);
 		
-		String [] clasificacion = {"S","A","B","C","F"};
-		double [] probabilidad = {0.01,0.1,0.25,0.5,0.75};
+		
+		
+		String [] nombreHechizo = new String[100];
+		int [] poderAtaque = new int[100];
+		
+		leerHechizosDisponibles(nombreHechizo,poderAtaque);
+		
+		
+		boolean cond = true;
+		
+		
+		
+		menu(cond,userNames,passWords,vida,attack,defence,speed,cantSpells,experience,playerName,nameSpell,
+				enemyName,enemyVida,enemyAtaque,enemyClase,enemyVelocidad,nombreHechizo,poderAtaque);
+		
+	}
+	
+
+	private static void leerHechizosDisponibles(String[] nombreHechizo, int[] poderAtaque) {
+		int cont  = 0;
+		try {
+			Scanner scan = new Scanner(new File("Hechizos.txt"));
+			while(scan.hasNextLine()) {
+				String line  = scan.nextLine();
+				String [] part = line.split(",");
+				String nombre = part[0];
+				int poder = Integer.parseInt(part[1]);
+				
+				nombreHechizo[cont] = nombre;
+				poderAtaque[cont] = poder;
+				cont++;
+				
+			}
+			scan.close();
+			
+		} catch (FileNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
 		
 	}
 
+
+	private static void menu(boolean cond, String[] userNames, String[] passWords, int[] vida, int[] attack,
+			int[] defence, int[] speed, int[] cantSpells, int[] experience, String[] playerName, String[] nameSpell, String[] enemyName, int[] enemyVida, int[] enemyAtaque, String[] enemyClase,
+			int[] enemyVelocidad, String[] nombreHechizo, int[] poderAtaque) {
+		Scanner scan  = new Scanner(System.in);
+		int cont = 0;
+		System.out.println("Bienvenido!");
+		while(cond) {
+			
+			System.out.println("Ingrese su nombre de usuario: ");
+			String user = scan.next();
+			System.out.println("Ingrese su nombre de contraseña: ");
+			String pass = scan.next();
+			
+			//Menu Admin
+			if(user.equals("Admin") && pass.equals("Patata19")) {
+				System.out.println("Menu Admin");
+				System.out.println("A)Eliminar Jugador\n B)Agregar Enemigos\n C)AgregarHechizos\n D)Estadisticas Jugadores");
+				String opcion = scan.next().toUpperCase();
+				boolean condAdmin = true;
+				while(condAdmin) {
+					
+					if(opcion.equals("A")) {
+						System.out.println("funciono");
+						condAdmin = false;
+					}else if(opcion.equals("B")) {
+						System.out.println("funciono");
+						condAdmin = false;
+					}else if(opcion.equals("C")) {
+						System.out.println("funciono");
+						condAdmin = false;
+					}else if(opcion.equals("D")) {
+						String pantalla = estadisticasTodosJugadores(userNames,vida,attack,defence,speed,cantSpells,experience);
+						System.out.print(pantalla);
+						System.out.println("funciono");
+						condAdmin = false;
+					}
+					else {
+						System.out.println("Eliga una opcion valida.");
+						System.out.println("A)Eliminar Jugador\n B)Agregar Enemigos\n C)AgregarHechizos\n D)Estadisticas Jugadores");
+					}
+				}				
+			}
+			//Menu Usuario
+			else  {
+				while(cont<=userNames.length && userNames[cont]!= null) {
+					//System.out.println(cont);
+					if(userNames[cont].equals(user) && userNames[cont]!= null) {
+						if(passWords[cont].equals(pass) && passWords[cont]!= null) {
+							System.out.println("Encontrado.");
+							break;
+						}else {
+							System.out.println("Contraseña no encontrada.");
+							cont++;
+						}
+					}else {
+						cont++;
+					}
+				}
+				if(userNames[cont] == null ) {
+					System.out.println("No se encontro el usuario, intente nuevamente.");
+				}else {
+		
+					boolean condUser = true;
+					while(condUser) {
+						System.out.println("Menu Usuario");
+						System.out.println("A)Pelear contra Enemigo\nB)Aprender Hechizo\nC)Estadisticas Jugador\nD)Estadisticas Hechizos\nE)Jugadores con mas Experiencia");
+						String opcion = scan.next().toUpperCase();
+						
+						if(opcion.equals("A")) {
+							boolean condCombate = true;
+							while(condCombate) {
+								System.out.println("Eliga el tipo de combate");
+								System.out.println("1) JCJ (jugador contra jugador)\n2) JCE (jugador contra entorno)");
+								String combate = scan.next().toUpperCase();
+								
+								if(combate.equals("JCJ")) {
+									
+									String encontrar = buscarJugador(userNames);
+									
+									
+									combateJCJ(userNames,passWords,vida,attack,defence,speed,cantSpells,experience,playerName,nameSpell,
+											enemyName,enemyVida,enemyAtaque,enemyClase,enemyVelocidad,nombreHechizo,poderAtaque,encontrar,cont,user);
+									
+									condCombate = false;
+									
+								}else if(combate.equals("JCE")) {
+									
+									String encontrar = buscarEnemigo(enemyClase, enemyName);
+									System.out.println(encontrar);
+									combateJCE(userNames,passWords,vida,attack,defence,speed,cantSpells,experience,playerName,nameSpell,
+											enemyName,enemyVida,enemyAtaque,enemyClase,enemyVelocidad,nombreHechizo,poderAtaque,encontrar,cont,user);
+									condCombate = false;
+								}else {
+									System.out.println("Ingrese una opcion valida");
+									System.out.println("1) JCJ (jugador contra jugador)\n2) JCE (jugador contra entorno)");
+								}
+							}
+							
+							
+							System.out.println("funciono");
+							
+						}else if(opcion.equals("B")) {
+							
+							aprenderHechizo(userNames,vida,attack,defence,speed,cantSpells,experience,playerName,nameSpell,user,cont,nombreHechizo,poderAtaque);
+							
+							
+							
+						}else if(opcion.equals("C")) {
+							System.out.println("Ingrese el nombre del jugador: ");
+							String userStats = scan.next();
+							int contC = 0;
+							while(contC<=userNames.length && userNames[contC]!= null) {
+								
+								if(userNames[contC].equals(userStats) && userNames[contC]!= null) {
+									String pantalla = estadisticasJugador(userNames,passWords,vida,attack,
+											defence,speed,cantSpells,experience,userStats,contC);
+									System.out.println(pantalla);
+									
+									
+									//condUser = false;
+									break;
+								}else {
+									contC++;
+								}
+							}
+							
+							if(userNames[contC] == null ) {
+								System.out.println("No se encontro el usuario, intente nuevamente.");
+							}
+							
+							
+							
+						}else if(opcion.equals("D")) {
+							System.out.println("Ingrese el nombre del jugador");
+							String userSpells = scan.next();
+							int contD = 0;
+							while(contD<=userNames.length && userNames[contD]!= null) {
+								
+								if(userNames[contD].equals(userSpells) && userNames[contD]!= null) {
+									String pantalla = listaHechizos(playerName,nameSpell,userSpells);
+									System.out.println(pantalla);
+									
+									//condUser = false;
+									break;		
+								}else {
+									contD++;
+								}
+							}
+							if(userNames[contD] == null ) {
+								System.out.println("No se encontro el usuario, intente nuevamente.");
+							}
+
+						}
+						else if(opcion.equals("E")) {
+							System.out.println("Ranking de experiencia de jugadores");
+							String ranking = rankingJugadores(userNames,experience);
+							System.out.println(ranking);
+							
+						}
+						else if(opcion.equals("F")) {
+							System.out.println("funciono");
+							condUser = false;
+							cond = false;
+						}
+						else {
+							System.out.println("Eliga una opcion valida.");
+							System.out.println("A)Eliminar Jugador\nB)Agregar Enemigos\nC)AgregarHechizos\nD)Estadisticas Jugadores");
+						}
+					}	
+				}
+			}			
+		}	
+	}
+
+
+	private static void combateJCE(String[] userNames, String[] passWords, int[] vida, int[] attack, int[] defence,
+			int[] speed, int[] cantSpells, int[] experience, String[] playerName, String[] nameSpell,
+			String[] enemyName, int[] enemyVida, int[] enemyAtaque, String[] enemyClase, int[] enemyVelocidad,
+			String[] nombreHechizo, int[] poderAtaque, String encontrar, int cont, String user) {
+		Scanner scan =  new Scanner(System.in);
+		int i;
+		int puntos = 0;
+		for (i = 0; i<enemyName.length;i++) {
+			if(enemyName[i].equals(encontrar)) {
+				if (enemyClase[i].equals("S")) {
+					puntos = 20;
+				}
+				if (enemyClase[i].equals("A")) {
+					puntos = 10;
+				}
+				if (enemyClase[i].equals("B")) {
+					puntos = 5;
+				}
+				if (enemyClase[i].equals("C")) {
+					puntos = 2;
+				}
+				if (enemyClase[i].equals("F")) {
+					puntos = 1;
+				}
+				break;
+			}
+		}
+		System.out.println(user +" V/S " + encontrar);
+		while(vida[cont] > 0 || enemyVida[i] > 0) {
+			
+			if(speed[cont] > enemyVelocidad[i]) {
+				System.out.println("Comienza atacando " + user);
+				System.out.println("Eliga el ataque que desea usar : \nA) Ataque normal(daño = ataque)\nB) Usar Hechizo");
+				String respuestaUser = scan.nextLine().toUpperCase();
+				
+				if (respuestaUser.equals("A")) {
+					enemyVida[i] = enemyVida[i] - attack[cont] ;
+					if(enemyVida[i]<=0) {
+						System.out.println("El ganador es: " + user);
+						
+						sumarEstadisticas(userNames,passWords,vida,attack,defence,speed,puntos,user,cont);
+
+						
+					
+						break;
+					}else {
+						System.out.println("Comienza el turno de  " + encontrar);
+
+							vida[cont] = vida[cont] -(enemyAtaque[i]-defence[cont]);
+							if(vida[cont]<=0) {
+								System.out.println("El ganador es: " + encontrar);
+								
+								break;
+							}
+						}
+				} 
+				if(respuestaUser.equals("B")) {
+					System.out.println("Elija el hechizo a utilizar");
+					for(int j = 0; j<playerName.length;j++) {
+						if(user.equals(playerName[j])) {
+							System.out.println(nameSpell[j]);
+						}
+					}
+					String hechizoElejido = scan.nextLine();
+					int k;
+					for(k = 0; k<nombreHechizo.length;k++) {
+						if(hechizoElejido.equals(nombreHechizo[k])){
+							break;
+						}
+					}
+					
+					vida[i] = vida[i] -(poderAtaque[k]-defence[i]);
+					if(vida[i]<=0) {
+						System.out.println("El ganador es: " + user);
+						
+						sumarEstadisticas(userNames,passWords,vida,attack,defence,speed,puntos,user,cont);
+						break;
+						
+					}else {
+						
+						System.out.println("Comienza el turno de  " + encontrar);
+						System.out.println("Eliga el ataque que desea usar : \nA) Ataque normal(daño = ataque)\nB) Usar Hechizo");
+						
+							
+							vida[cont] = vida[cont] -(enemyAtaque[i]-defence[cont]);
+							if(vida[cont]<=0) {
+								System.out.println("El ganador es: " + encontrar);
+								
+								break;
+							}
+						
+						}
+					} 
+				}
+			}
+		}
+		
+		
+	private static void sumarEstadisticas(String[] userNames, String[] passWords, int[] vida, int[] attack,
+			int[] defence, int[] speed, int puntos, String user, int cont) {
+		
+		Scanner scan = new Scanner(System.in);
+		System.out.println("Felicidades tiene " + puntos + " para utilizar");
+		System.out.println("elija a que estadistica le desea agregar puntos \nA) Vida\nB) Ataque\nC) Defensa\nD) Velocidad");
+		String respuesta = scan.nextLine().toUpperCase();
+		boolean cond = false;
+		while(cond) {
+			if(respuesta.equals("A")) {
+				System.out.println("Indique la cantidad de puntos a agregar");
+				int agregar = scan.nextInt();
+				if(agregar > puntos) {
+					System.out.println("Ingrese una cantidad menor o igual a los puntos disponibles");
+					
+				}else {
+					vida[cont]+=agregar;
+					puntos -= agregar;
+					if(puntos == 0 ) {
+						cond = true;
+					}else {
+						System.out.println("Todavia tiene puntos disponibles: " + puntos);
+						System.out.println("elija a que estadistica le desea agregar puntos \nA) Vida\nB) Ataque\nC) Defensa\nD) Velocidad");
+						respuesta = scan.nextLine().toUpperCase();
+					}
+				}
+			}
+			else if(respuesta.equals("B")) {
+				System.out.println("Indique la cantidad de puntos a agregar");
+				System.out.println("Indique la cantidad de puntos a agregar");
+				int agregar = scan.nextInt();
+				if(agregar > puntos) {
+					System.out.println("Ingrese una cantidad menor o igual a los puntos disponibles");
+					
+				}else {
+					attack[cont]+=agregar;
+					puntos -= agregar;
+					if(puntos == 0 ) {
+						cond = true;
+					}else {
+						System.out.println("Todavia tiene puntos disponibles: " + puntos);
+						System.out.println("elija a que estadistica le desea agregar puntos \nA) Vida\nB) Ataque\nC) Defensa\nD) Velocidad");
+						respuesta = scan.nextLine().toUpperCase();
+					}
+				}
+			}
+			else if(respuesta.equals("C")) {
+				System.out.println("Indique la cantidad de puntos a agregar");
+				System.out.println("Indique la cantidad de puntos a agregar");
+				int agregar = scan.nextInt();
+				if(agregar > puntos) {
+					System.out.println("Ingrese una cantidad menor o igual a los puntos disponibles");
+					
+				}else {
+					defence[cont]+=agregar;
+					puntos -= agregar;
+					if(puntos == 0 ) {
+						cond = true;
+					}else {
+						System.out.println("Todavia tiene puntos disponibles: " + puntos);
+						System.out.println("elija a que estadistica le desea agregar puntos \nA) Vida\nB) Ataque\nC) Defensa\nD) Velocidad");
+						respuesta = scan.nextLine().toUpperCase();
+					}
+				}
+			}
+			else if(respuesta.equals("D")) {
+				System.out.println("Indique la cantidad de puntos a agregar");
+				System.out.println("Indique la cantidad de puntos a agregar");
+				int agregar = scan.nextInt();
+				if(agregar > puntos) {
+					System.out.println("Ingrese una cantidad menor o igual a los puntos disponibles");
+					
+				}else {
+					speed[cont]+=agregar;
+					puntos -= agregar;
+					if(puntos == 0 ) {
+						cond  = true;
+					}else {
+						System.out.println("Todavia tiene puntos disponibles: " + puntos);
+						System.out.println("elija a que estadistica le desea agregar puntos \nA) Vida\nB) Ataque\nC) Defensa\nD) Velocidad");
+						respuesta = scan.nextLine().toUpperCase();
+					}
+				}
+			}
+		}
+		
+	}
+
+
+	private static void combateJCJ(String[] userNames, String[] passWords, int[] vida, int[] attack, int[] defence,
+			int[] speed, int[] cantSpells, int[] experience, String[] playerName, String[] nameSpell,
+			String[] enemyName, int[] enemyVida, int[] enemyAtaque, String[] enemyClase, int[] enemyVelocidad,
+			String[] nombreHechizo, int[] poderAtaque, String encontrar, int cont, String user) {
+		
+		int i ;
+		Scanner scan = new Scanner(System.in);
+		
+		//encontrar = enemigo
+		//Posicion del enemigo 
+		for (i =0;i<userNames.length;i++) {
+			if(userNames[i].equals(encontrar)) {
+				break;
+			}
+		}
+		
+		System.out.println(user + " V/S " + encontrar);
+		
+		//Inicio de combate------comparar velocidades
+		
+		while(vida[cont]> 0 || vida[i]>0) {
+			
+			if(speed[cont] > speed[i]) {
+				System.out.println("Comienza Atacando  " + user);
+				System.out.println("Eliga el ataque que desea usar : \nA) Ataque normal(daño = ataque)\nB) Usar Hechizo");
+				String respuestaUser = scan.nextLine().toUpperCase();
+				
+				if (respuestaUser.equals("A")) {
+					vida[i] = vida[i] - (attack[cont] - defence[i]);
+					if(vida[i]<=0) {
+						System.out.println("El ganador es: " + user);
+						experience[cont]+=250;
+						
+						break;
+					}else {
+						System.out.println("Comienza el turno de  " + encontrar);
+						System.out.println("Eliga el ataque que desea usar : \nA) Ataque normal(daño = ataque)\nB) Usar Hechizo");
+						String respuestaOponente = scan.nextLine().toUpperCase();
+						
+						if (respuestaOponente.equals("A")) {
+							vida[cont] = vida[cont] - (attack[i] - defence[cont]);
+							if(vida[i]<=0) {
+								System.out.println("El ganador es: " + encontrar);
+								experience[i]+=250;
+								
+								break;
+							}
+						}
+						
+						if(respuestaOponente.equals("B")) {
+							System.out.println("Elija el hechizo a utilizar");
+							for(int j = 0; j<playerName.length;j++) {
+								if(user.equals(playerName[j])) {
+									System.out.println(nameSpell[j]);
+								}
+							}
+							String hechizoElejido = scan.nextLine();
+							int k;
+							for(k = 0; k<nombreHechizo.length;k++) {
+								if(hechizoElejido.equals(nombreHechizo[k])){
+									break;
+								}
+							}
+							
+							vida[cont] = vida[cont] -(poderAtaque[k]-defence[cont]);
+							if(vida[cont]<=0) {
+								System.out.println("El ganador es: " + encontrar);
+								experience[i]+=250;
+								break;
+							}
+						}
+					} 
+				}if(respuestaUser.equals("B")) {
+					System.out.println("Elija el hechizo a utilizar");
+					for(int j = 0; j<playerName.length;j++) {
+						if(user.equals(playerName[j])) {
+							System.out.println(nameSpell[j]);
+						}
+					}
+					String hechizoElejido = scan.nextLine();
+					int k;
+					for(k = 0; k<nombreHechizo.length;k++) {
+						if(hechizoElejido.equals(nombreHechizo[k])){
+							break;
+						}
+					}
+					
+					vida[i] = vida[i] -(poderAtaque[k]-defence[i]);
+					if(vida[i]<=0) {
+						System.out.println("El ganador es: " + user);
+						experience[cont]+=250;
+						break;
+					}else {
+						//Turno Oponente
+						System.out.println("Comienza el turno de  " + encontrar);
+						System.out.println("Eliga el ataque que desea usar : \nA) Ataque normal(daño = ataque)\nB) Usar Hechizo");
+						String respuestaOponente = scan.nextLine().toUpperCase();
+						
+						if(respuestaOponente.equals("A")) {
+							vida[cont] = vida[cont] - (attack[i] - defence[cont]);
+							if(vida[cont]<=0) {
+								System.out.println("El ganador es: " + encontrar);
+								experience[i]+=250;
+								break;
+							}
+						}
+						
+						if(respuestaOponente.equals("B")) {
+
+							System.out.println("Elija el hechizo a utilizar");
+							for(int j = 0; j<playerName.length;j++) {
+								if(encontrar.equals(playerName[j])) {
+									System.out.println(nameSpell[j]);
+								}
+							}
+							String hechizoElejido2 = scan.nextLine();
+							int a;
+							for(a = 0; a<nombreHechizo.length;a++) {
+								if(hechizoElejido2.equals(nombreHechizo[a])){
+									break;
+								}
+							}
+							
+							vida[cont] = vida[cont] -(poderAtaque[a]-defence[cont]);
+							if(vida[cont]<=0) {
+								System.out.println("El ganador es: " + encontrar);
+								experience[i]+=250;
+								break;
+							}
+						
+						}
+					} 
+				}
+			}if(speed[cont] < speed[i]) {
+				//Primer Turno
+				System.out.println("Comienza Atacando  " + encontrar);
+				System.out.println("Eliga el ataque que desea usar : \nA) Ataque normal(daño = ataque)\nB) Usar Hechizo");
+				String respuestaUser = scan.nextLine().toUpperCase();
+				
+				if (respuestaUser.equals("A")) {
+					vida[cont] = vida[cont] - (attack[i] - defence[cont]);
+					if(vida[cont]<=0) {
+						System.out.println("El ganador es: " + encontrar);
+						experience[i]+=250;
+						break;
+					}else {
+						System.out.println("Comienza el turno de  " + user);
+						System.out.println("Eliga el ataque que desea usar : \nA) Ataque normal(daño = ataque)\nB) Usar Hechizo");
+						String respuestaOponente = scan.nextLine().toUpperCase();
+						 
+						//Turno oponente
+						if (respuestaOponente.equals("A")) {
+							vida[i] = vida[i] - (attack[cont] - defence[i]);
+							if(vida[i]<=0) {
+								System.out.println("El ganador es: " + user);
+								experience[cont]+=250;
+								
+								break;
+							}
+						}
+						
+						if(respuestaOponente.equals("B")) {
+							System.out.println("Elija el hechizo a utilizar");
+							for(int j = 0; j<playerName.length;j++) {
+								if(encontrar.equals(playerName[j])) {
+									System.out.println(nameSpell[j]);
+								}
+							}
+							String hechizoElejido = scan.nextLine();
+							int k;
+							for(k = 0; k<nombreHechizo.length;k++) {
+								if(hechizoElejido.equals(nombreHechizo[k])){
+									break;
+								}
+							}
+							
+							vida[i] = vida[i] -(poderAtaque[k]-defence[i]);
+							if(vida[i]<=0) {
+								System.out.println("El ganador es: " + user);
+								experience[cont]+=250;
+								break;
+							}
+						}
+					} 
+					//Primer turno
+				}if(respuestaUser.equals("B")) {
+					System.out.println("Elija el hechizo a utilizar");
+					for(int j = 0; j<playerName.length;j++) {
+						if(user.equals(playerName[j])) {
+							System.out.println(nameSpell[j]);
+						}
+					}
+					String hechizoElejido = scan.nextLine();
+					int k;
+					for(k = 0; k<nombreHechizo.length;k++) {
+						if(hechizoElejido.equals(nombreHechizo[k])){
+							break;
+						}
+					}
+					
+					vida[cont] = vida[cont] -(poderAtaque[k]-defence[cont]);
+					if(vida[cont]<=0) {
+						System.out.println("El ganador es: " + encontrar);
+						experience[i]+=250;
+						break;
+					}else {
+						//Turno Oponente
+						System.out.println("Comienza el turno de  " + encontrar);
+						System.out.println("Eliga el ataque que desea usar : \nA) Ataque normal(daño = ataque)\nB) Usar Hechizo");
+						String respuestaOponente = scan.nextLine().toUpperCase();
+						
+						if(respuestaOponente.equals("A")) {
+							vida[i] = vida[i] - (attack[cont] - defence[i]);
+							if(vida[i]<=0) {
+								System.out.println("El ganador es: " + user);
+								experience[cont]+=250;
+								break;
+							}
+						}
+						
+						if(respuestaOponente.equals("B")) {
+
+							System.out.println("Elija el hechizo a utilizar");
+							for(int j = 0; j<playerName.length;j++) {
+								if(user.equals(playerName[j])) {
+									System.out.println(nameSpell[j]);
+								}
+							}
+							String hechizoElejido2 = scan.nextLine();
+							int a;
+							for(a = 0; a<nombreHechizo.length;a++) {
+								if(hechizoElejido2.equals(nombreHechizo[a])){
+									break;
+								}
+							}
+							
+							vida[i] = vida[i] - (poderAtaque[a]-defence[i]);
+							if(vida[i]<=0) {
+								System.out.println("El ganador es: " + user);
+								experience[cont]+=250;
+								break;
+							}
+						
+						}
+					} 
+				}
+			}
+		}
+	}
+
+
+	private static String rankingJugadores(String[] userNames, int[] experience) {
+		String pantalla ="";
+		
+		for(int i = 0; i<userNames.length-1;i++) {
+			for(int j = 0; j<userNames.length-i-1;j++) {
+				if(experience[j+1]>experience[j]) {
+					int exp = experience[j+1];
+					experience[j+1] =experience[j];
+					experience[j] = exp;
+					
+					String nombre = userNames[j+1];
+					userNames[j+1] = userNames[j];
+					userNames[j] = nombre;
+				}
+			}
+		}
+		
+		for (int a = 0; a< userNames.length;a++) {
+			if(userNames[a]== null) {
+				break;
+			}else {
+				pantalla += (a+1)+") Nombre Jugador" + userNames[a] + " Experiencia: " + experience[a]+"\n";
+			}
+		}
+		
+		return pantalla;
+	}
+
+
+	private static String buscarJugador(String[] userNames) {
+		String jugador ="";
+		int i ;
+		
+		Random rand = new Random();
+		
+		for(i = 0; i<userNames.length;i++) {
+			if(userNames[i] == null) {
+				break;
+			}
+		}
+		
+		int val = rand.nextInt(0, i);
+		
+		
+		
+		
+		return jugador = userNames[val];
+	}
+
+
+	private static void aprenderHechizo(String[] userNames, int[] vida, int[] attack, int[] defence, int[] speed,
+			int[] cantSpells, int[] experience, String[] playerName, String[] nameSpell, String user, int cont, String[] nombreHechizo, int[] poderAtaque) {
+		
+		Scanner scan = new Scanner(System.in);
+		int cant = 0;
+		
+		if (experience[cont] >= 1000) {
+			
+			for (int i = 0; i <nombreHechizo.length; i++ ) {
+				if(nombreHechizo[i] == null) {
+					break;
+				}else {
+					System.out.println("Nombre hechizo: " + nombreHechizo[i] + " Poder de hechizo: " + poderAtaque[i]);
+				}
+				
+			}
+			System.out.println("Ingrese el nombre del hechizo que desea aprender: ");
+			
+			String hechizoSelec = scan.nextLine();
+			
+			for(int i = 0; i<nombreHechizo.length; i++) {
+				//System.out.println(nombreHechizo[i]);
+				if(hechizoSelec.equals(nombreHechizo[i])) {
+					for( int j = 0; j<playerName.length;j++) {
+						if(user.equals(playerName[j]) && hechizoSelec.equals(nameSpell[j])) {
+							System.out.println("El hechizo ya esta aprendido.");
+							break;
+						}else if(playerName[j]== null) {
+							cantSpells[cont] +=1;
+							experience[cont] -=1000;
+							playerName[j] = user;
+							nameSpell[j] = hechizoSelec;
+							System.out.println("Hechizo fue aprendido");
+							break;
+						}
+					}
+				break;
+				
+				}else if(nombreHechizo[i]== null) {
+					System.out.println("El hechizo no se encuentra");
+					break;
+				}
+				
+			}
+			
+			
+			
+			
+		}else {
+			System.out.println("No tiene la experiencia suficiente para aprender un hechizos");
+		}
+		
+	}
+
 	
+	private static String estadisticasTodosJugadores(String[] userNames, int[] vida, int[] attack, int[] defence,
+			int[] speed, int[] cantSpells, int[] experience) {
+		String estadisticas = "";
+		
+		for(int i = 0; i<=userNames.length;i++) {
+			if(userNames[i] == null ) {
+				break;
+			}else {
+				estadisticas += " \nNombre Jugador: " + userNames[i] + " Vida: " + vida[i] + " Ataque: " + attack[i] + " Defensa " 
+			+ defence[i] + " Velocidad: " + speed[i] + " Cantidad de Hechizos: " + cantSpells[i] + " Experiencia: " + experience[i];
+			}
+		}
+		
+		return estadisticas;
+	}
+
+
+	private static String listaHechizos(String[] playerName, String[] nameSpell, String userSpells) {
+		String hechizos = "Nombre Usuario: " + userSpells + " Lista de hechizos:\n ";
+		int contS=0;
+		
+		for (int i = 0; i<=playerName.length;i++) {
+			if(playerName[i] == null) {
+				break;
+			}else if(playerName[i].equals(userSpells)) {
+				hechizos += " Nombre Hechizo: " + nameSpell[i] ;
+			}
+		}
+		return hechizos;
+	}
+
+
+	private static String estadisticasJugador(String[] userNames, String[] passWords, int[] vida, int[] attack,
+			int[] defence, int[] speed, int[] cantSpells, int[] experience, String userStats,int contC) {
+		String estadisticas = "";
+		
+		estadisticas = "Nombre Usuario: " + userStats + " Vida = " + vida[contC] + " Ataque = " + attack[contC]
+						+ " Defensa = " + defence[contC] + " Velocidad = " + defence[contC] + " Velocidad = " + speed[contC] +
+						" Cantidad de Hechizos = " + cantSpells[contC] + " Esperiencia = " + experience[contC];
+			
+		
+		
+		return estadisticas;
+		
+	}
+
 	
+	private static String buscarEnemigo(String [] enemyClase, String[] enemyName) {
+		String enemigo = "";
+		double max = 0.75;
+		double min = 0;
+		int cont = 0;
+		String [] pool = new String[10];
+		
+		Random rand  = new Random();
+		
+		double val = rand.nextDouble(min, max);
+		
+		if(val>=0 && val <=0.01) {
+			enemigo = "S";
+			
+			for(int i =0; i<enemyClase.length;i++) {
+				if(enemyClase[i] != null) {
+					if(enemyClase[i].equals("S")) {
+						//System.out.println(enemyName[i]);
+						cont++;
+						
+						for(int j = 0; j<pool.length;j++) {
+							if(!pool.equals(enemyName)) {
+								pool[j] = enemyName[i];
+							}
+						}
+						
+					}
+				}
+			}
+			int choose = rand.nextInt(cont);
+			//System.out.println("Enemigo encontrado: " + pool[choose]);
+			enemigo = pool[choose];
+				
+			
+		}else if(val > 0.01 && val <= 0.10) {
+			enemigo = "A";
+			
+			for(int i =0; i<enemyClase.length;i++) {
+				if(enemyClase[i] != null) {
+					if(enemyClase[i].equals("A")) {
+						//System.out.println(enemyName[i]);
+						cont++;
+						
+						for(int j = 0; j<pool.length;j++) {
+							if(!pool.equals(enemyName)) {
+								pool[j] = enemyName[i];
+							}
+						}
+						
+					}
+				}
+			}
+			int choose = rand.nextInt(cont);
+			//System.out.println("Enemigo encontrado: " + pool[choose]);
+			enemigo = pool[choose];
+			
+		}else if(val > 0.10 && val <= 0.25){
+			enemigo = "B";
+			for(int i =0; i<enemyClase.length;i++) {
+				if(enemyClase[i] != null) {
+					if(enemyClase[i].equals("B")) {
+						//System.out.println(enemyName[i]);
+						cont++;
+						
+						for(int j = 0; j<pool.length;j++) {
+							if(!pool.equals(enemyName)) {
+								pool[j] = enemyName[i];
+							}
+						}
+						
+					}
+				}
+			}
+			int choose = rand.nextInt(cont);
+			//System.out.println("Enemigo encontrado: " + pool[choose]);
+			enemigo = pool[choose];
+			
+		}else if(val > 0.25 && val <= 0.50) {
+			enemigo = "C";
+			
+			for(int i =0; i<enemyClase.length;i++) {
+				
+				if(enemyClase[i] != null) {
+					
+					if(enemyClase[i].equals("C")) {
+						//System.out.println(enemyName[i]);
+						cont++;
+						
+						for(int j = 0; j<pool.length;j++) {
+							if(!pool.equals(enemyName)) {
+								pool[j] = enemyName[i];
+							}
+						}
+						
+					}
+				}
+			}
+			int choose = rand.nextInt(cont);
+			//System.out.println("Enemigo encontrado: " + pool[choose]);
+			enemigo = pool[choose];
+			
+		}else if(val > 0.50 && val <= 0.75) {
+			enemigo = "F";
+			
+			for(int i =0; i<enemyClase.length;i++) {
+				if(enemyClase[i] != null) {
+					if(enemyClase[i].equals("F")) {
+						//System.out.println(enemyName[i]);
+						cont++;
+						
+						for(int j = 0; j<cont;j++) {
+							if(!pool.equals(enemyName)) {
+								if(pool[j]== null) {
+									pool[j] = enemyName[i];
+								}
+								
+							}
+						}
+						
+					}
+				}
+			}
+			int choose = rand.nextInt(0,cont);
+			enemigo = pool[choose];
+		}else {
+			enemigo = "no hay mano";
+		}
+		
+		//System.out.println(val);
+
+		return enemigo ;
+	}
+
+
 	private static int leerEnemigos(String[] enemyName, int[] enemyVida, int[] enemyAtaque, String[] enemyClase,
 			int[] enemyVelocidad) {
 		int cont = 0;
@@ -82,12 +1018,11 @@ public class app {
 	}
 
 
-
-	private static int leerHechizos(String[] playerName, String[] nameSpell, int[] power) {
+	private static int leerHechizos(String[] playerName, String[] nameSpell) {
 		int cont = 0;
 		
 		try {
-			Scanner txt = new Scanner(new File("Hechizos.txt"));
+			Scanner txt = new Scanner(new File("HechizosJugadores.txt"));
 
 			while(txt.hasNextLine()) {
 				
@@ -95,11 +1030,11 @@ public class app {
 				String [] part = line.split(",");
 				String nombre = part[0];
 				String spell = part[1];
-				int poder = Integer.parseInt(part[2]);
+				
 				
 				playerName[cont] = nombre;
 				nameSpell[cont] = spell;
-				power[cont] = poder;
+				
 				
 				//System.out.println(playerName[cont] + nameSpell[cont] + power[cont] );
 				
@@ -114,7 +1049,6 @@ public class app {
 		}
 		return cont;
 	}
-
 
 
 	public static int leerJugadores(String [] userNames,String [] passWords,int [] vida,int [] attack,
@@ -158,3 +1092,5 @@ public class app {
 		return cont;
 	}
 }
+
+
