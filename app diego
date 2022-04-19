@@ -5,8 +5,17 @@ import java.io.FileNotFoundException;
 import java.util.Random;
 import java.util.Scanner;
 
-public class app {
+/** Made by:
+ * David Aros
+ * Sebastian Gallardo
+ * Diego López
+ */
 
+public class app {
+	/**
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		
 		String [] userNames = new String [100];
@@ -18,13 +27,13 @@ public class app {
 		int [] cantSpells = new int [100];
 		int [] experience = new int [100];
 		
-		leerJugadores(userNames,passWords,vida,attack,defence,speed,cantSpells,experience);
+		int contJugadores = leerJugadores(userNames,passWords,vida,attack,defence,speed,cantSpells,experience);
 		
 		String [] playerName = new String[100];
 		String [] nameSpell = new String[100];
 		
 		
-		leerHechizos(playerName,nameSpell);
+		int contHechizos = leerHechizos(playerName,nameSpell);
 		
 		String [] enemyName = new String[100];
 		int [] enemyVida = new int[100];
@@ -32,14 +41,14 @@ public class app {
 		String [] enemyClase = new String[100];
 		int [] enemyVelocidad = new int[100];
 		
-		leerEnemigos(enemyName,enemyVida,enemyAtaque,enemyClase,enemyVelocidad);
+		int contEnemigo = leerEnemigos(enemyName,enemyVida,enemyAtaque,enemyClase,enemyVelocidad);
 		
 		
 		
 		String [] nombreHechizo = new String[100];
 		int [] poderAtaque = new int[100];
 		
-		leerHechizosDisponibles(nombreHechizo,poderAtaque);
+		int contDisponibles = leerHechizosDisponibles(nombreHechizo,poderAtaque);
 		
 		
 		boolean cond = true;
@@ -47,12 +56,16 @@ public class app {
 		
 		
 		menu(cond,userNames,passWords,vida,attack,defence,speed,cantSpells,experience,playerName,nameSpell,
-				enemyName,enemyVida,enemyAtaque,enemyClase,enemyVelocidad,nombreHechizo,poderAtaque);
+				enemyName,enemyVida,enemyAtaque,enemyClase,enemyVelocidad,nombreHechizo,poderAtaque,contJugadores,contHechizos,contEnemigo,contDisponibles);
 		
 	}
-	
-
-	private static void leerHechizosDisponibles(String[] nombreHechizo, int[] poderAtaque) {
+	/**
+	 * Reads and saves the data from the Hechizos.txt in the lists
+	 * @param nombreHechizo
+	 * @param poderAtaque
+	 * @return
+	 */
+	private static int leerHechizosDisponibles(String[] nombreHechizo, int[] poderAtaque) {
 		int cont  = 0;
 		try {
 			Scanner scan = new Scanner(new File("Hechizos.txt"));
@@ -73,14 +86,39 @@ public class app {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
+		return cont;
 		
 	}
 
-
+/**
+ * Main menu of the app. 
+ * Calls most of the sub-programs in the code 
+ * @param cond
+ * @param userNames
+ * @param passWords
+ * @param vida
+ * @param attack
+ * @param defence
+ * @param speed
+ * @param cantSpells
+ * @param experience
+ * @param playerName
+ * @param nameSpell
+ * @param enemyName
+ * @param enemyVida
+ * @param enemyAtaque
+ * @param enemyClase
+ * @param enemyVelocidad
+ * @param nombreHechizo
+ * @param poderAtaque
+ * @param contJugadores
+ * @param contHechizos
+ * @param contEnemigo
+ * @param contDisponibles
+ */
 	private static void menu(boolean cond, String[] userNames, String[] passWords, int[] vida, int[] attack,
 			int[] defence, int[] speed, int[] cantSpells, int[] experience, String[] playerName, String[] nameSpell, String[] enemyName, int[] enemyVida, int[] enemyAtaque, String[] enemyClase,
-			int[] enemyVelocidad, String[] nombreHechizo, int[] poderAtaque) {
+			int[] enemyVelocidad, String[] nombreHechizo, int[] poderAtaque, int contJugadores, int contHechizos, int contEnemigo, int contDisponibles) {
 		Scanner scan  = new Scanner(System.in);
 		int cont = 0;
 		System.out.println("Bienvenido!");
@@ -92,34 +130,12 @@ public class app {
 			String pass = scan.next();
 			
 			//Menu Admin
-			if(user.equals("Admin") && pass.equals("Patata19")) {
-				System.out.println("Menu Admin");
-				System.out.println("A)Eliminar Jugador\n B)Agregar Enemigos\n C)AgregarHechizos\n D)Estadisticas Jugadores");
-				String opcion = scan.next().toUpperCase();
-				boolean condAdmin = true;
-				while(condAdmin) {
-					
-					if(opcion.equals("A")) {
-						System.out.println("funciono");
-						condAdmin = false;
-					}else if(opcion.equals("B")) {
-						System.out.println("funciono");
-						condAdmin = false;
-					}else if(opcion.equals("C")) {
-						System.out.println("funciono");
-						condAdmin = false;
-					}else if(opcion.equals("D")) {
-						String pantalla = estadisticasTodosJugadores(userNames,vida,attack,defence,speed,cantSpells,experience);
-						System.out.print(pantalla);
-						System.out.println("funciono");
-						condAdmin = false;
-					}
-					else {
-						System.out.println("Eliga una opcion valida.");
-						System.out.println("A)Eliminar Jugador\n B)Agregar Enemigos\n C)AgregarHechizos\n D)Estadisticas Jugadores");
-					}
-				}				
+			if("ADMIN".equals(user)&&"Patata19".equals(pass)) {
+				
+				menuAdmin(cond,userNames,passWords,vida,attack,defence,speed,cantSpells,experience,playerName,nameSpell,
+						enemyName,enemyVida,enemyAtaque,enemyClase,enemyVelocidad,nombreHechizo,poderAtaque,contJugadores,contHechizos,contEnemigo,contDisponibles);
 			}
+			
 			//Menu Usuario
 			else  {
 				while(cont<=userNames.length && userNames[cont]!= null) {
@@ -252,7 +268,305 @@ public class app {
 		}	
 	}
 
+/**
+ * Menu with the sub-programs related to the admin.
+ * Uses the following sub-programs:
+ * -eliminarJugador
+ * -agregarEnemigo
+ * -agregarHechizo
+ * -estadisticasTodosJugadores
+ * @param cond
+ * @param userNames
+ * @param passWords
+ * @param vida
+ * @param attack
+ * @param defence
+ * @param speed
+ * @param cantSpells
+ * @param experience
+ * @param playerName
+ * @param nameSpell
+ * @param enemyName
+ * @param enemyVida
+ * @param enemyAtaque
+ * @param enemyClase
+ * @param enemyVelocidad
+ * @param nombreHechizo
+ * @param poderAtaque
+ * @param contJugadores
+ * @param contHechizos
+ * @param contEnemigo
+ * @param contDisponibles
+ */
+	private static void menuAdmin(boolean cond, String[] userNames, String[] passWords, int[] vida, int[] attack,
+			int[] defence, int[] speed, int[] cantSpells, int[] experience, String[] playerName, String[] nameSpell,
+			String[] enemyName, int[] enemyVida, int[] enemyAtaque, String[] enemyClase, int[] enemyVelocidad,
+			String[] nombreHechizo, int[] poderAtaque, int contJugadores, int contHechizos, int contEnemigo,
+			int contDisponibles) {
 
+		Scanner sc = new Scanner(System.in);
+		String respuesta = null;
+		do {
+			
+		
+			System.out.println("   MENU ADMIN"+"\n"+""+"\n");
+			System.out.println("Que desea hacer?"+"\n"+""+"\n");
+			System.out.println("Eliminar Jugador [ 1 ]"+
+							   "\n"+"Agregar Enemigos [ 2 ]"+
+							   "\n"+"Agregar Hechizos [ 3 ]"+
+							   "\n"+"Ver Estadisticas de los Jugadores [ 4 ]"+
+							   "\n"+"Salir [ 0 ]"+"\n");
+		
+			respuesta = sc.nextLine();
+		
+			switch(respuesta){
+		
+			case"0":
+				break;
+				
+			case"1":
+				
+				System.out.println("Que Jugador desea eliminar?: ");
+				String elimJugador = sc.nextLine();
+				
+				boolean eliminado = eliminarJugador(elimJugador,userNames,passWords,vida,attack,defence,speed,cantSpells,
+						experience,playerName,nameSpell,contJugadores,contHechizos);
+				
+				if(eliminado) {
+					System.out.println("El jugador a sido eliminado...");
+				}
+				else {
+					System.out.println("No se ha encontrado el Jugador...");
+					
+				}
+				break;
+				
+				
+			case"2":
+				
+				System.out.println("Ingrese los siguientes datos: "+"\n"+""+"\n");
+				
+				System.out.println("Nombre del Enemigo: "+"\n");		
+				String nombreEnemigo = sc.nextLine();
+				
+				System.out.println("Vida del Enemigo: "+"\n");		
+				int vidaEnemigo = sc.nextInt();
+				
+				System.out.println("Ataque del Enemigo: "+"\n");		
+				int ataqueEnemigo = sc.nextInt();
+				
+				System.out.println("Clase del Enemigo: "+"\n");		
+				String claseEnemigo = sc.nextLine();	
+				
+				System.out.println("Velocidad del Enemigo: "+"\n");		
+				int velocidadEnemigo = sc.nextInt();
+				
+				boolean enemigoIngresado = agregarEnemigo(nombreEnemigo,vidaEnemigo ,ataqueEnemigo,
+						claseEnemigo,velocidadEnemigo,enemyName,enemyVida ,
+						enemyAtaque,enemyClase ,enemyVelocidad );
+				
+				if(enemigoIngresado) {
+					System.out.println("El Enemigo a sido agregado...");
+				}
+				else {
+					System.out.println("No se puede agregar el Enemigo...");
+					
+				}
+				
+				
+				break;
+				
+			case"3":
+				
+				System.out.println("Ingrese los siguientes datos: "+"\n"+""+"\n");
+				
+				System.out.println("Nombre del Hechizo: "+"\n");		
+				String hechizoAdd = sc.nextLine();
+				
+				System.out.println("Poder del Hechizo: "+"\n");
+				int poderHechizo = sc.nextInt();
+				
+				System.out.println("A quien pertenece: "+"\n");
+				String usuario = sc.nextLine();
+				
+				boolean ingresado = agregarHechizo(hechizoAdd,poderHechizo,nombreHechizo,poderAtaque);
+				
+				if(ingresado) {
+					System.out.println("El Hechizo a sido agregado...");
+				}
+				else {
+					System.out.println("No se puede agregar el Hechizo...");
+					
+				}
+				
+				break;
+							
+			case"4":
+				
+				String txt = estadisticasTodosJugadores(userNames,vida,attack,defence,speed,cantSpells,experience);
+				
+				System.out.println(txt);
+				break;
+				
+			}
+		
+		}while("0"!=respuesta);
+	
+		
+	}
+
+/**
+ * Adds a new spell to the list and updates the list.
+ * @param hechizoAdd
+ * @param poderHechizo
+ * @param nombreHechizo
+ * @param poderAtaque
+ * @return
+ */
+	private static boolean agregarHechizo(String hechizoAdd, int poderHechizo, String[] nombreHechizo,
+			int[] poderAtaque) {
+		
+		boolean agregado = false;
+		
+		for(int i=0 ; i< nombreHechizo.length ; i++) {
+			
+			if(nombreHechizo[i].equals(null)) {			
+					
+				nombreHechizo[i]=hechizoAdd;
+						
+				poderAtaque[i]=poderHechizo;
+				agregado = true;
+			}
+		}
+		return agregado;
+	}
+/**
+ * Adds a new enemy to the list
+ * @param nombreEnemigo
+ * @param vidaEnemigo
+ * @param ataqueEnemigo
+ * @param claseEnemigo
+ * @param velocidadEnemigo
+ * @param enemyName
+ * @param enemyVida
+ * @param enemyAtaque
+ * @param enemyClase
+ * @param enemyVelocidad
+ * @return
+ */
+	private static boolean agregarEnemigo(String nombreEnemigo, int vidaEnemigo, int ataqueEnemigo, String claseEnemigo,
+			int velocidadEnemigo, String[] enemyName, int[] enemyVida, int[] enemyAtaque, String[] enemyClase,
+			int[] enemyVelocidad) {
+		
+		boolean agregado = false;
+		
+		for(int i=0 ; i< enemyName.length ; i++) {
+			
+			if(enemyName[i].equals(null)) {
+				
+				enemyName[i]=nombreEnemigo;
+				enemyVida[i]=vidaEnemigo;
+				enemyAtaque[i]=ataqueEnemigo;
+				enemyClase[i]=claseEnemigo;
+				enemyVelocidad[i]=velocidadEnemigo;
+						
+				agregado = true;
+			}
+		}
+		return agregado;
+	}
+/**
+ * Deletes a player from the list.
+ * @param elimJugador
+ * @param userNames
+ * @param passWords
+ * @param vida
+ * @param attack
+ * @param defence
+ * @param speed
+ * @param cantSpells
+ * @param experience
+ * @param playerName
+ * @param nameSpell
+ * @param contJugadores
+ * @param contHechizos
+ * @return
+ */
+	private static boolean eliminarJugador(String elimJugador, String[] userNames, String[] passWords, int[] vida,
+			int[] attack, int[] defence, int[] speed, int[] cantSpells, int[] experience, String[] playerName,
+			String[] nameSpell, int contJugadores, int contHechizos) {
+		boolean eliminado = false;
+		
+		for(int i = 0 ; i<contJugadores ; i++) {
+			
+			if(userNames[i].equals(elimJugador)) {
+				
+				for(int j=i ; j<contJugadores-1 ; j++) {
+					
+					userNames[i] =userNames[i+1];
+					passWords[i] =passWords[i+1];
+					vida[i] =vida[i+1];
+					attack[i] =attack[i+1];
+					defence[i] =defence[i+1];
+					speed[i] =speed[i+1];
+					cantSpells[i] =cantSpells[i+1];
+					experience[i] =experience[i+1];
+					
+					for(int h = 0 ; h<contHechizos ; h++) {
+						if(playerName[h]==elimJugador) {
+							for(int x = h ; x<contHechizos-1 ; x++) {
+								playerName[x]=playerName[x+1];
+								nameSpell[x]=nameSpell[x+1];
+								
+							}
+							playerName[-1]=null;
+							nameSpell[-1]=null;
+							
+						}
+					}					
+				}
+
+				userNames[-1] =null;
+				passWords[-1] =null;
+				vida[-1] =0;
+				attack[-1] =0;
+				defence[-1] =0;
+				speed[-1] =0;
+				cantSpells[-1] =0;
+				experience[-1] =0;
+				
+				eliminado = true;
+			}
+			else {
+				eliminado = false;;
+			}
+		}
+		return eliminado;
+	}
+/**
+ * Sub-Program in charge of the PVE combat
+ * calls the sumarEstadisticas sub-program
+ * @param userNames
+ * @param passWords
+ * @param vida
+ * @param attack
+ * @param defence
+ * @param speed
+ * @param cantSpells
+ * @param experience
+ * @param playerName
+ * @param nameSpell
+ * @param enemyName
+ * @param enemyVida
+ * @param enemyAtaque
+ * @param enemyClase
+ * @param enemyVelocidad
+ * @param nombreHechizo
+ * @param poderAtaque
+ * @param encontrar
+ * @param cont
+ * @param user
+ */
 	private static void combateJCE(String[] userNames, String[] passWords, int[] vida, int[] attack, int[] defence,
 			int[] speed, int[] cantSpells, int[] experience, String[] playerName, String[] nameSpell,
 			String[] enemyName, int[] enemyVida, int[] enemyAtaque, String[] enemyClase, int[] enemyVelocidad,
@@ -350,7 +664,18 @@ public class app {
 			}
 		}
 		
-		
+/**
+ * adds points to the player statistics
+ * @param userNames
+ * @param passWords
+ * @param vida
+ * @param attack
+ * @param defence
+ * @param speed
+ * @param puntos
+ * @param user
+ * @param cont
+ */
 	private static void sumarEstadisticas(String[] userNames, String[] passWords, int[] vida, int[] attack,
 			int[] defence, int[] speed, int puntos, String user, int cont) {
 		
@@ -439,7 +764,29 @@ public class app {
 		
 	}
 
-
+/**
+ * Sub-program in charge of the PVP combat.
+ * @param userNames
+ * @param passWords
+ * @param vida
+ * @param attack
+ * @param defence
+ * @param speed
+ * @param cantSpells
+ * @param experience
+ * @param playerName
+ * @param nameSpell
+ * @param enemyName
+ * @param enemyVida
+ * @param enemyAtaque
+ * @param enemyClase
+ * @param enemyVelocidad
+ * @param nombreHechizo
+ * @param poderAtaque
+ * @param encontrar
+ * @param cont
+ * @param user
+ */
 	private static void combateJCJ(String[] userNames, String[] passWords, int[] vida, int[] attack, int[] defence,
 			int[] speed, int[] cantSpells, int[] experience, String[] playerName, String[] nameSpell,
 			String[] enemyName, int[] enemyVida, int[] enemyAtaque, String[] enemyClase, int[] enemyVelocidad,
@@ -690,7 +1037,12 @@ public class app {
 		}
 	}
 
-
+/**
+ * Sub-Program that returns the ranking of players. from the one with most experience points to the one with less experience points
+ * @param userNames
+ * @param experience
+ * @return
+ */
 	private static String rankingJugadores(String[] userNames, int[] experience) {
 		String pantalla ="";
 		
@@ -719,7 +1071,11 @@ public class app {
 		return pantalla;
 	}
 
-
+/**
+ * Search a random player to use in the pvp combat
+ * @param userNames
+ * @return
+ */
 	private static String buscarJugador(String[] userNames) {
 		String jugador ="";
 		int i ;
@@ -740,7 +1096,23 @@ public class app {
 		return jugador = userNames[val];
 	}
 
-
+/**
+ * adds a spell to the player
+ * Updates the list with the player amount of spells and the list from the hechizosJugadores.txt
+ * @param userNames
+ * @param vida
+ * @param attack
+ * @param defence
+ * @param speed
+ * @param cantSpells
+ * @param experience
+ * @param playerName
+ * @param nameSpell
+ * @param user
+ * @param cont
+ * @param nombreHechizo
+ * @param poderAtaque
+ */
 	private static void aprenderHechizo(String[] userNames, int[] vida, int[] attack, int[] defence, int[] speed,
 			int[] cantSpells, int[] experience, String[] playerName, String[] nameSpell, String user, int cont, String[] nombreHechizo, int[] poderAtaque) {
 		
@@ -784,10 +1156,7 @@ public class app {
 					break;
 				}
 				
-			}
-			
-			
-			
+			}	
 			
 		}else {
 			System.out.println("No tiene la experiencia suficiente para aprender un hechizos");
@@ -795,7 +1164,17 @@ public class app {
 		
 	}
 
-	
+	/**
+	 * return all of the player statistics
+	 * @param userNames
+	 * @param vida
+	 * @param attack
+	 * @param defence
+	 * @param speed
+	 * @param cantSpells
+	 * @param experience
+	 * @return
+	 */
 	private static String estadisticasTodosJugadores(String[] userNames, int[] vida, int[] attack, int[] defence,
 			int[] speed, int[] cantSpells, int[] experience) {
 		String estadisticas = "";
@@ -812,7 +1191,13 @@ public class app {
 		return estadisticas;
 	}
 
-
+/**
+ * Returns all of the player spells
+ * @param playerName
+ * @param nameSpell
+ * @param userSpells
+ * @return
+ */
 	private static String listaHechizos(String[] playerName, String[] nameSpell, String userSpells) {
 		String hechizos = "Nombre Usuario: " + userSpells + " Lista de hechizos:\n ";
 		int contS=0;
@@ -827,7 +1212,20 @@ public class app {
 		return hechizos;
 	}
 
-
+/**
+ * Returns the statistics of a player given his name
+ * @param userNames
+ * @param passWords
+ * @param vida
+ * @param attack
+ * @param defence
+ * @param speed
+ * @param cantSpells
+ * @param experience
+ * @param userStats
+ * @param contC
+ * @return
+ */
 	private static String estadisticasJugador(String[] userNames, String[] passWords, int[] vida, int[] attack,
 			int[] defence, int[] speed, int[] cantSpells, int[] experience, String userStats,int contC) {
 		String estadisticas = "";
@@ -842,7 +1240,12 @@ public class app {
 		
 	}
 
-	
+	/**
+	 * Search a random enemy (using the probabilities) to battle in the PVE
+	 * @param enemyClase
+	 * @param enemyName
+	 * @return
+	 */
 	private static String buscarEnemigo(String [] enemyClase, String[] enemyName) {
 		String enemigo = "";
 		double max = 0.75;
@@ -976,7 +1379,15 @@ public class app {
 		return enemigo ;
 	}
 
-
+/**
+ * Reads and saves the information of the Enemigos.txt
+ * @param enemyName
+ * @param enemyVida
+ * @param enemyAtaque
+ * @param enemyClase
+ * @param enemyVelocidad
+ * @return
+ */
 	private static int leerEnemigos(String[] enemyName, int[] enemyVida, int[] enemyAtaque, String[] enemyClase,
 			int[] enemyVelocidad) {
 		int cont = 0;
@@ -1017,7 +1428,12 @@ public class app {
 		
 	}
 
-
+/**
+ * Reads and saves the information of the HechizosJugadores.txt
+ * @param playerName
+ * @param nameSpell
+ * @return
+ */
 	private static int leerHechizos(String[] playerName, String[] nameSpell) {
 		int cont = 0;
 		
@@ -1050,7 +1466,18 @@ public class app {
 		return cont;
 	}
 
-
+/**
+ * Reads and saves the information from the Jugadores.txt
+ * @param userNames
+ * @param passWords
+ * @param vida
+ * @param attack
+ * @param defence
+ * @param speed
+ * @param cantSpells
+ * @param experience
+ * @return
+ */
 	public static int leerJugadores(String [] userNames,String [] passWords,int [] vida,int [] attack,
 			int [] defence,int [] speed,int [] cantSpells,int [] experience) {
 		int cont = 0;
